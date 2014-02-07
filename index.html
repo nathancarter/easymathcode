@@ -59,6 +59,8 @@ Type [Markdown](https://daringfireball.net/projects/markdown/) input on the left
 
 TeX like $N(\mu,\sigma)\sim\frac{1}{\sigma\sqrt{2\pi}}e^{(x-\mu)^2/2\sigma^2}$ is rendered by [MathJax](http://www.mathjax.org); its full power is at your disposal.
 
+If something conflicts with Markdown syntax (e.g., underscores) you may need to escape it.  Since `_this_` is Markdown for _this_, you should use `$a\_1+a\_2$` to obtain $a\_1+a\_2$.
+
 ## Code
 
 Indented code blocks get syntax highlighted, with language auto-detection.  For example, it recognizes [coffeescript](http://coffeescript.org/).
