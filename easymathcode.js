@@ -6,20 +6,30 @@ function D ( id )
 
 function showSource ()
 {
-    D( 'left' ).style.display = 'block';
-    D( 'right' ).style.display = 'none';
+    var L = D( 'left' );
+    var R = D( 'right' );
+    L.style.display = 'block';
+    R.style.display = 'none';
+    L.style.width = '100%';
 }
 
 function showHTML ()
 {
-    D( 'left' ).style.display = 'none';
-    D( 'right' ).style.display = 'block';
+    var L = D( 'left' );
+    var R = D( 'right' );
+    R.style.display = 'block';
+    L.style.display = 'none';
+    R.style.width = '100%';
 }
 
 function showBoth ()
 {
-    D( 'left' ).style.display = 'block';
-    D( 'right' ).style.display = 'block';
+    var L = D( 'left' );
+    var R = D( 'right' );
+    L.style.display = 'block';
+    R.style.display = 'block';
+    L.style.width = '50%';
+    R.style.width = '50%';
 }
 
 function handleSage ( element )
