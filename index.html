@@ -1,5 +1,8 @@
 <html>
     <head>
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="normalize.css">
         <script type="text/javascript" src="showdown.js">
         </script>
         <script type="text/x-mathjax-config">
@@ -14,32 +17,7 @@
         </script>
         <script src="https://sagecell.sagemath.org/static/jquery.min.js"></script>
         <script src="https://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="main.css">
-        <link rel="stylesheet" href="normalize.css">
         <script src="highlight.pack.js"></script>
-        <script type="text/javascript">
-            function D ( id )
-            {
-                return document.getElementById( id );
-            }
-            function showSource ()
-            {
-                D( 'left' ).style.display = 'block';
-                D( 'right' ).style.display = 'none';
-            }
-            function showHTML ()
-            {
-                D( 'left' ).style.display = 'none';
-                D( 'right' ).style.display = 'block';
-            }
-            function showBoth ()
-            {
-                D( 'left' ).style.display = 'block';
-                D( 'right' ).style.display = 'block';
-            }
-            var converter = new Showdown.converter({});
-        </script>
     </head>
     <body style="margin: 1px; padding: 0px;">
         <table border=0 cellpadding=10 cellspacing=0
@@ -129,6 +107,26 @@ Credits go to all technologies linked to above, plus [Showdown](https://github.c
         </tr>
     </body>
     <script type="text/javascript">
+        function D ( id )
+        {
+            return document.getElementById( id );
+        }
+        function showSource ()
+        {
+            D( 'left' ).style.display = 'block';
+            D( 'right' ).style.display = 'none';
+        }
+        function showHTML ()
+        {
+            D( 'left' ).style.display = 'none';
+            D( 'right' ).style.display = 'block';
+        }
+        function showBoth ()
+        {
+            D( 'left' ).style.display = 'block';
+            D( 'right' ).style.display = 'block';
+        }
+        var converter = new Showdown.converter({});
         function handleSage ( element )
         {
             var all = element.getElementsByTagName( 'pre' );
