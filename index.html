@@ -1,0 +1,241 @@
+<html>
+    <head>
+        <script type="text/javascript" src="showdown.js">
+        </script>
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config( {
+              tex2jax: { inlineMath: [ [ '$', '$' ],
+                                       [ '\\(', '\\)' ] ] },
+              showProcessingMessages: false
+            } );
+        </script>
+        <script type="text/javascript"
+                src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+        </script>
+        <script src="https://sagecell.sagemath.org/static/jquery.min.js"></script>
+        <script src="https://sagecell.sagemath.org/static/embedded_sagecell.js"></script>
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="normalize.css">
+        <script src="highlight.pack.js"></script>
+        <script type="text/javascript">
+            function D ( id )
+            {
+                return document.getElementById( id );
+            }
+            function showSource ()
+            {
+                D( 'left' ).style.display = 'block';
+                D( 'right' ).style.display = 'none';
+            }
+            function showHTML ()
+            {
+                D( 'left' ).style.display = 'none';
+                D( 'right' ).style.display = 'block';
+            }
+            function showBoth ()
+            {
+                D( 'left' ).style.display = 'block';
+                D( 'right' ).style.display = 'block';
+            }
+            var converter = new Showdown.converter({});
+        </script>
+    </head>
+    <body style="margin: 1px; padding: 0px;">
+        <table border=0 cellpadding=10 cellspacing=0
+               width=100% height=100%
+               style="table-layout: fixed;">
+        <tr>
+            <td id="left" width=50%>
+                <textarea id="source"
+                          style="width: 100%; height: 100%;">
+# Easy math/code documents on the web
+
+## HTML
+
+Type [Markdown](https://daringfireball.net/projects/markdown/) input on the left and it's instantly rendered on the right.
+
+## Math
+
+TeX like $N(\mu,\sigma)\sim\frac{1}{\sigma\sqrt{2\pi}}e^{(x-\mu)^2/2\sigma^2}$ is rendered by [MathJax](http://www.mathjax.org); its full power is at your disposal.
+
+## Code
+
+Indented code blocks get syntax highlighted, with language auto-detection.  For example, it recognizes [coffeescript](http://coffeescript.org/).
+
+    square = ( x ) -> x * x
+
+With too little code to recognize the language, use a hash to specify.
+
+    # python
+    a["b"] = 2.9
+
+To silence the language output, use a double-hash.
+
+    ## javascript
+    window.thing = function ( item ) { return item.bork(); }
+
+## Both
+
+If you write [Sage](http://www.sagemath.org) code, like
+
+    ## sage
+    plot( x^2, (x,-3,3) )
+
+then you can run it!  Replace `#sage` with `#sagecell`, and it will immediately become executable.
+
+*Enjoy!*
+
+-- [Nathan Carter](http://web.bentley.edu/empl/c/ncarter)
+
+## Note
+
+Credits go to all technologies linked to above, plus [Showdown](https://github.com/coreyti/showdown), [highlight.js](http://highlightjs.org/), and [HTML5 Boilerplate](http://html5boilerplate.com/).
+</textarea>
+            </td>
+            <td id="right" width=50% style="padding: 0px 10px 0px 10px;">
+                <div id="output"
+                     style="width: 100%; height: 100%; overflow: scroll;">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td id="bottom" colspan=2 height=40>
+                <table border=0 cellpadding=0 cellspacing=0
+                       width=100%>
+                <tr>
+                    <td align=left valign=middle width=50%>
+                        <a href="#" id="dnld" download="mymath.md"
+                        >download this markdown</a>
+                        &nbsp; &nbsp; &nbsp;
+                        or upload some:
+                        <input type="file" id="files"
+                               name="files[]"/>
+                    </td>
+                    <td align=right valign=middle width=50%>
+                        view: 
+                        <input type=button value="Source"
+                               onclick="showSource();"/>
+                        <input type=button value="HTML"
+                               onclick="showHTML();"/>
+                        <input type=button value="Both"
+                               onclick="showBoth();"/>
+                    </td>
+                </tr>
+                </table>
+            </td>
+        </tr>
+    </body>
+    <script type="text/javascript">
+        function handleSage ( element )
+        {
+            var all = element.getElementsByTagName( 'pre' );
+            var len = all.length;
+            for ( var i = 0 ; i < len ; i++ ) {
+                var pre = all[i];
+                var child = pre.childNodes[0];
+                if ( !child || ( child.tagName != 'CODE' ) )
+                    continue;
+                var inside = child.textContent;
+                var m = /^#(#?)\s*(\w+)\s*\n/.exec( inside );
+                if ( !m ) {
+                    hljs.highlightBlock( pre );
+                    continue;
+                }
+                if ( m[1] != '' )
+                    child.textContent =
+                        inside.substring( m[0].length );
+                if ( m[2] == 'sagecell' ) {
+                    var newCell = document.createElement( 'div' );
+                    newCell.setAttribute( 'class', 'sage' );
+                    newCell.innerHTML = '<pre></pre>';
+                    newCell.childNodes[0].textContent =
+                        child.textContent;
+                    pre.parentNode.insertBefore( newCell, pre );
+                    pre.parentNode.removeChild( pre );
+                    sagecell.makeSagecell(
+                        { "inputLocation" : ".sage" } );
+                } else {
+                    pre.className =
+                        ( pre.className ?
+                          pre.className + ' ' : '' ) + m[1];
+                    hljs.highlightBlock( pre );
+                }
+            }
+        }
+        var last = '';
+        function refresh ()
+        {
+            if ( ( D( 'source' ).style.display == 'none' )
+              || ( D( 'output' ).style.display == 'none' ) )
+                return;
+            var next = D( 'source' ).value;
+            if ( next != last ) {
+                D( 'dnld' ).setAttribute(
+                    'href', 'data:text/plain;charset=utf-8,'
+                          + encodeURIComponent( next ) );
+                D( 'output' ).innerHTML =
+                    converter.makeHtml( next );
+                handleSage( D( 'output' ) );
+                MathJax.Hub.Queue( [ "Typeset", MathJax.Hub ] );
+                last = next;
+            }
+        }
+        refresh();
+        setInterval( refresh, 1000 );
+        function currentIndentation ()
+        {
+            var S = D( 'source' );
+            var pos = S.selectionStart;
+            var text = S.value;
+            var indent = 0;
+            while ( ( pos > 0 ) && ( text[pos-1] != '\n' ) ) {
+                pos--;
+                if ( text[pos] == ' ' ) indent++; else indent = 0;
+            }
+            return indent;
+        }
+        function typeText ( text )
+        {
+            var S = D( 'source' );
+            var start = S.selectionStart;
+            var end = S.selectionEnd;
+            S.value = S.value.substring( 0, start )
+                    + text + S.value.substring( end );
+            S.selectionStart = S.selectionEnd =
+                start + text.length;
+        }
+        D( 'source' ).onkeypress = function ( event )
+        {
+            if ( event.keyCode == 13 ) { // enter
+                var spaces = '';
+                var need = currentIndentation();
+                while ( spaces.length < need ) spaces += ' ';
+                typeText( '\n' + spaces );
+                event.preventDefault();
+            }
+        }
+        D( 'source' ).onkeydown = function ( event )
+        {
+            if ( event.keyCode == 9 ) { // tab
+                typeText( '    ' );
+                event.preventDefault();
+            }
+        }
+        document.getElementById( 'files' ).addEventListener(
+          'change', function ( event ) {
+            if ( !window.File || !window.FileReader
+              || !window.FileList || !window.Blob ) {
+                alert( 'Your browser doesn\'t support that. :(' );
+                return;
+            }
+            if ( event.target.files.length != 1 )
+                alert( 'Something went wrong.' );
+            var reader = new FileReader();
+            reader.onload = function ( event ) {
+                D( 'source' ).value = event.target.result;
+            };
+            reader.readAsText( event.target.files[0] );
+        } );
+    </script>
+</html>
