@@ -107,7 +107,7 @@ function typeText ( text )
     S.selectionStart = S.selectionEnd = start + text.length;
 }
 
-D( 'source' ).onkeypress = function ( event )
+function enterHandler ( event )
 {
     if ( event.keyCode == 13 ) { // enter
         var spaces = '';
@@ -118,7 +118,7 @@ D( 'source' ).onkeypress = function ( event )
     }
 }
 
-D( 'source' ).onkeydown = function ( event )
+function tabHandler ( event )
 {
     if ( event.keyCode == 9 ) { // tab
         typeText( '    ' );
@@ -144,6 +144,8 @@ function fileChosen ( event )
 
 function setup ()
 {
+    D( 'source' ).onkeypress = enterHandler;
+    D( 'source' ).onkeydown = tabHandler;
     window.lastSource = '';
     window.showdownConverter = new Showdown.converter({});
     refresh();
