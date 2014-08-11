@@ -142,10 +142,51 @@ function fileChosen ( event )
     reader.readAsText( event.target.files[0] );
 }
 
+function downloadHTML ( event )
+{
+    var data = window.showdownConverter.makeHtml(
+        D( 'source' ).value );
+    data = '<html>\n'
+         + '  <head>\n'
+         + '    <link rel="stylesheet" href="highlight.css">\n'
+         + '    <link rel="stylesheet" href="main.css">\n'
+         + '    <link rel="stylesheet" href="normalize.css">\n'
+         + '    <script type="text/javascript"\n'
+         + '            src="showdown.js"></script>\n'
+         + '    <script type="text/x-mathjax-config">\n'
+         + '        MathJax.Hub.Config( {\n'
+         + '          tex2jax: { inlineMath: [\n'
+         + '            [ "$", "$" ], [ "\\\\(", "\\\\)" ] ] },\n'
+         + '          showProcessingMessages : false\n'
+         + '        } );\n'
+         + '    </script>\n'
+         + '    <script type="text/javascript"\n'
+         + '            src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>\n'
+         + '    <script src="https://sagecell.sagemath.org/static/jquery.min.js"></script>\n'
+         + '    <script src="https://sagecell.sagemath.org/static/embedded_sagecell.js"></script>\n'
+         + '    <script src="highlight.pack.js"></script>\n'
+         + '    <script type="text/javascript"\n'
+         + '            src="./easymathcode.js"></script>\n'
+         + '  </head>\n'
+         + '  <body style="padding: 1em;">\n'
+         + data + '\n'
+         + '  <script>\n'
+         + '      handleSage( document.body );\n'
+         + '  </script>\n'
+         + '  </body>\n'
+         + '</html>';
+    var blob = new Blob( [ data ], { type : 'text/html' } );
+    var link = document.createElement( 'a' );
+    link.setAttribute( 'href', URL.createObjectURL( blob ) );
+    link.setAttribute( 'download', 'mymath.html' );
+    link.click();
+}
+
 function setup ()
 {
     D( 'source' ).onkeypress = enterHandler;
     D( 'source' ).onkeydown = tabHandler;
+    D( 'dnld2' ).onclick = downloadHTML;
     window.lastSource = '';
     window.showdownConverter = new Showdown.converter({});
     refresh();
