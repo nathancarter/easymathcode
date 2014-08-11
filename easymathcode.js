@@ -107,7 +107,7 @@ function typeText ( text )
     S.selectionStart = S.selectionEnd = start + text.length;
 }
 
-function enterHandler ( event )
+function keypressHandler ( event )
 {
     if ( event.keyCode == 13 ) { // enter
         var spaces = '';
@@ -118,7 +118,7 @@ function enterHandler ( event )
     }
 }
 
-function tabHandler ( event )
+function keydownHandler ( event )
 {
     if ( event.keyCode == 9 ) { // tab
         typeText( '    ' );
@@ -184,8 +184,8 @@ function downloadHTML ( event )
 
 function setup ()
 {
-    D( 'source' ).onkeypress = enterHandler;
-    D( 'source' ).onkeydown = tabHandler;
+    D( 'source' ).onkeydown = keydownHandler;
+    D( 'source' ).onkeypress = keypressHandler;
     D( 'dnld2' ).onclick = downloadHTML;
     window.lastSource = '';
     window.showdownConverter = new Showdown.converter({});
