@@ -32,6 +32,22 @@ function showBoth ()
     R.style.width = '50%';
 }
 
+var templates = {
+    automatic : {
+        autoeval : true,
+        hide : [
+            "editor", "editorToggle", "language", "evalButton",
+            "permalink"
+        ]
+    },
+    hidden : {
+        evalButtonText : 'Start',
+        hide : [
+            "editor", "editorToggle", "language", "permalink"
+        ]
+    }
+}
+
 function handleSage ( element )
 {
     var all = element.getElementsByTagName( 'pre' );
@@ -42,7 +58,7 @@ function handleSage ( element )
         if ( !child || ( child.tagName != 'CODE' ) )
             continue;
         var inside = child.textContent;
-        var m = /^#(#?)\s*(\w+)\s*\n/.exec( inside );
+        var m = /^#(#?)\s*(\w+)\s*(.*)\n/.exec( inside );
         if ( !m ) {
             hljs.highlightBlock( pre );
             continue;
@@ -56,8 +72,15 @@ function handleSage ( element )
             newCell.childNodes[0].textContent = child.textContent;
             pre.parentNode.insertBefore( newCell, pre );
             pre.parentNode.removeChild( pre );
-            sagecell.makeSagecell(
-                { "inputLocation" : ".sage" } );
+            if ( templates.hasOwnProperty( m[3] ) ) {
+                var options = templates[m[3]];
+            } else try {
+                var options = JSON.parse( '{' + m[3] + '}' );
+            } catch ( e ) {
+                var options = { };
+            }
+            options.inputLocation = '.sage';
+            sagecell.makeSagecell( options );
         } else {
             pre.className = ( pre.className ?
                               pre.className + ' ' : '' ) + m[1];
