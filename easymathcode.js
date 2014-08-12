@@ -47,7 +47,7 @@ var templates = {
         ]
     },
     quiz : {
-        evalButtonText : 'Take quiz',
+        evalButtonText : 'Quiz yourself',
         hide : [
             "editor", "editorToggle", "language", "permalink"
         ]
@@ -105,15 +105,24 @@ function handleSage ( element )
                 }
             }
             child.textContent =
-                signature + '):\n'
+                'checkHistory = []\n'
+              + signature + '):\n'
+              + '\tglobal checkHistory\n'
+              + '\tCORRECT = '
+              + '"<font color=green><b>CORRECT</b></font>"\n'
+              + '\tINCORRECT = '
+              + '"<font color=red><b>INCORRECT</b></font>"\n'
               + '\tdef _check ():\n'
               + funcbody
-              + '\tCOR = '
-              + '"<font color=green><b>CORRECT</b></font>"\n'
-              + '\tINC = '
-              + '"<font color=red><b>INCORRECT</b></font>"\n'
-              + '\thtml("The choice of "' + whattyped + '+" is "'
-              + '+(COR if _check() else INC)+"</blockquote>")';
+              + '\tresult = str(_check())\n'
+              + '\tif ( len( checkHistory ) == 0 ):\n'
+              + '\t\tcheckHistory += [ "Quiz starts with "'
+              + whattyped + '+", which is "+result+"." ]\n'
+              + '\telse:\n'
+              + '\t\tcheckHistory += [ "You entered "'
+              + whattyped + '+", which is "+result+"." ]\n'
+              + '\thtml("<blockquote>"+("<br>".join(checkHistory))'
+              + '+"</blockquote>")'
         }
         if ( ( m[2] == 'sagecell' ) || ( m[2] == 'quiz' ) ) {
             var newCell = document.createElement( 'div' );
