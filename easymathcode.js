@@ -47,11 +47,16 @@ var templates = {
         ]
     },
     quiz : {
-        evalButtonText : 'Take quiz',
+        evalButtonText : 'Quiz yourself',
         hide : [
             "editor", "editorToggle", "language", "permalink"
         ]
     }
+}
+function getTemplate ( name )
+{
+    return templates.hasOwnProperty( name ) ?
+        JSON.parse( JSON.stringify( templates[name] ) ) : { };
 }
 
 function handleSage ( element )
@@ -100,33 +105,44 @@ function handleSage ( element )
                 }
             }
             child.textContent =
-                signature + '):\n'
+                'checkHistory = []\n'
+              + signature + '):\n'
+              + '\tglobal checkHistory\n'
+              + '\tCORRECT = '
+              + '"<font color=green><b>CORRECT</b></font>"\n'
+              + '\tINCORRECT = '
+              + '"<font color=red><b>INCORRECT</b></font>"\n'
               + '\tdef _check ():\n'
               + funcbody
-              + '\tCOR = '
-              + '"<font color=green><b>CORRECT</b></font>"\n'
-              + '\tINC = '
-              + '"<font color=red><b>INCORRECT</b></font>"\n'
-              + '\thtml("The choice of "' + whattyped + '+" is "'
-              + '+(COR if _check() else INC)+"</blockquote>")';
+              + '\tresult = str(_check())\n'
+              + '\tif ( len( checkHistory ) == 0 ):\n'
+              + '\t\tcheckHistory += [ "Quiz starts with "'
+              + whattyped + '+", which is "+result+"." ]\n'
+              + '\telse:\n'
+              + '\t\tcheckHistory += [ "You entered "'
+              + whattyped + '+", which is "+result+"." ]\n'
+              + '\thtml("<blockquote>"+("<br>".join(checkHistory))'
+              + '+"</blockquote>")'
         }
         if ( ( m[2] == 'sagecell' ) || ( m[2] == 'quiz' ) ) {
             var newCell = document.createElement( 'div' );
             newCell.setAttribute( 'class', 'sage' );
+            newCell.setAttribute( 'id', 'sage-cell-'+i );
             newCell.innerHTML = '<pre></pre>';
             newCell.childNodes[0].textContent = child.textContent;
             pre.parentNode.insertBefore( newCell, pre );
             pre.parentNode.removeChild( pre );
+            var options;
             if ( templates.hasOwnProperty( m[3] ) ) {
-                var options = templates[m[3]];
+                options = getTemplate( m[3] );
             } else if ( m[2] == 'quiz' ) {
-                var options = templates.quiz;
+                options = getTemplate( 'quiz' );
             } else try {
-                var options = JSON.parse( '{' + m[3] + '}' );
+                options = JSON.parse( '{' + m[3] + '}' );
             } catch ( e ) {
-                var options = { };
+                options = { };
             }
-            options.inputLocation = '.sage';
+            options.inputLocation = '#sage-cell-'+i;
             sagecell.makeSagecell( options );
         } else {
             pre.className = ( pre.className ?
@@ -143,6 +159,7 @@ function refresh ()
         return;
     var next = D( 'source' ).value;
     if ( next != window.lastSource ) {
+        sagecell.deleteSagecell( { inputLocation : '.sage' } );
         D( 'dnld' ).setAttribute(
             'href', 'data:text/plain;charset=utf-8,'
                   + encodeURIComponent( next ) );
