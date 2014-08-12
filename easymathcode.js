@@ -45,6 +45,12 @@ var templates = {
         hide : [
             "editor", "editorToggle", "language", "permalink"
         ]
+    },
+    quiz : {
+        evalButtonText : 'Take quiz',
+        hide : [
+            "editor", "editorToggle", "language", "permalink"
+        ]
     }
 }
 
@@ -65,7 +71,46 @@ function handleSage ( element )
         }
         if ( m[1] != '' )
             child.textContent = inside.substring( m[0].length );
-        if ( m[2] == 'sagecell' ) {
+        if ( m[2] == 'quiz' ) {
+            var lines = child.textContent.split( '\n' );
+            var signature = '@interact\ndef _(';
+            var whattyped = '';
+            var funcbody = '';
+            var count = 0;
+            for ( var i = 0 ; i < lines.length ; i++ ) {
+                var line = lines[i];
+                if ( line[0] == '#' ) {
+                    if ( count ) signature += ',';
+                    signature += 'text' + count + '=text_control("'
+                             + line.substring( 1 ) + '")'
+                    count++;
+                    continue;
+                }
+                var decl = /^([a-zA-Z_]+)[ \t\r]*:(.*)$/
+                           .exec( line );
+                if ( decl ) {
+                    if ( count ) signature += ',';
+                    signature += decl[1] + '=("Choose ' + decl[1]
+                               + ':",' + decl[2] + ')';
+                    whattyped += '+"' + decl[1] + ' = "+'
+                               + 'str(' + decl[1] + ')';
+                    count++;
+                } else {
+                    funcbody += '\t\t' + line + '\n';
+                }
+            }
+            child.textContent =
+                signature + '):\n'
+              + '\tdef _check ():\n'
+              + funcbody
+              + '\tCOR = '
+              + '"<font color=green><b>CORRECT</b></font>"\n'
+              + '\tINC = '
+              + '"<font color=red><b>INCORRECT</b></font>"\n'
+              + '\thtml("The choice of "' + whattyped + '+" is "'
+              + '+(COR if _check() else INC)+"</blockquote>")';
+        }
+        if ( ( m[2] == 'sagecell' ) || ( m[2] == 'quiz' ) ) {
             var newCell = document.createElement( 'div' );
             newCell.setAttribute( 'class', 'sage' );
             newCell.innerHTML = '<pre></pre>';
@@ -74,6 +119,8 @@ function handleSage ( element )
             pre.parentNode.removeChild( pre );
             if ( templates.hasOwnProperty( m[3] ) ) {
                 var options = templates[m[3]];
+            } else if ( m[2] == 'quiz' ) {
+                var options = templates.quiz;
             } else try {
                 var options = JSON.parse( '{' + m[3] + '}' );
             } catch ( e ) {
