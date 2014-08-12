@@ -256,10 +256,12 @@ function downloadHTML ( event )
          + '            src="./easymathcode.js"></script>\n'
          + '  </head>\n'
          + '  <body style="padding: 1em;">\n'
+         + '    <div style="width: 800px; margin: 0 auto;">\n'
          + data + '\n'
-         + '  <script>\n'
-         + '      handleSage( document.body );\n'
-         + '  </script>\n'
+         + '    </div>\n'
+         + '    <script>\n'
+         + '        handleSage( document.body );\n'
+         + '    </script>\n'
          + '  </body>\n'
          + '</html>';
     var blob = new Blob( [ data ], { type : 'text/html' } );
