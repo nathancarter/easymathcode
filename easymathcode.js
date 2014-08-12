@@ -58,7 +58,7 @@ function handleSage ( element )
         if ( !child || ( child.tagName != 'CODE' ) )
             continue;
         var inside = child.textContent;
-        var m = /^#(#?)\s*(\w+)\s*(.*)\n/.exec( inside );
+        var m = /^#(#?)[ \t\r]*(\w+)[ \t\r]*(.*)\n/.exec( inside );
         if ( !m ) {
             hljs.highlightBlock( pre );
             continue;
