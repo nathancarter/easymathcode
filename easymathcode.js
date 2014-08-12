@@ -103,6 +103,8 @@ function handleSage ( element )
                 }
                 var decl = /^([a-zA-Z_]+)[ \t\r]*:(.*)$/
                            .exec( line );
+                if ( decl && ( decl[2].trim().length == 0 ) )
+                    decl = null;
                 if ( decl ) {
                     if ( count ) signature += ',';
                     signature += decl[1] + '=("Choose ' + decl[1]
