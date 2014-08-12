@@ -80,14 +80,24 @@ function handleSage ( element )
             var lines = child.textContent.split( '\n' );
             var signature = '@interact\ndef _(';
             var whattyped = '';
+            var preamble = '';
             var funcbody = '';
             var count = 0;
-            for ( var i = 0 ; i < lines.length ; i++ ) {
-                var line = lines[i];
+            for ( var j = 0 ; j < lines.length ; j++ ) {
+                var line = lines[j];
                 if ( line[0] == '#' ) {
                     if ( count ) signature += ',';
-                    signature += 'text' + count + '=text_control("'
-                             + line.substring( 1 ) + '")'
+                    var text = '"' + line.substring( 1 ) + '"';
+                    var n = /#\{([a-zA-Z_]+)\}/.exec( text );
+                    while ( n ) {
+                        text = text.substring( 0, n.index )
+                             + '"+str(' + n[1] + ')+"'
+                             + text.substring( n.index
+                                             + n[0].length );
+                        n = /#\{([a-zA-Z_]+)\}/.exec( text );
+                    }
+                    signature += 'text' + count + '=text_control('
+                               + text + ')';
                     count++;
                     continue;
                 }
@@ -97,15 +107,20 @@ function handleSage ( element )
                     if ( count ) signature += ',';
                     signature += decl[1] + '=("Choose ' + decl[1]
                                + ':",' + decl[2] + ')';
+                    if ( whattyped.length > 0 )
+                        whattyped += '+", "';
                     whattyped += '+"' + decl[1] + ' = "+'
                                + 'str(' + decl[1] + ')';
                     count++;
-                } else {
+                } else if ( whattyped.length > 0 ) {
                     funcbody += '\t\t' + line + '\n';
+                } else {
+                    preamble += line + '\n';
                 }
             }
             child.textContent =
                 'checkHistory = []\n'
+              + preamble
               + signature + '):\n'
               + '\tglobal checkHistory\n'
               + '\tCORRECT = '
