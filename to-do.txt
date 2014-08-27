@@ -1,0 +1,14 @@
+
+Since each of the following items will require a nicer UI, rewrite
+the existing tool to import Bootstrap and jQuery, making the
+following steps easier.
+
+Have the page constantly saving the files to your HTML local
+storage, with keys based on the first 100 characters or something,
+and an expiry date.  Then there should be a "Recents" button that
+allows you to browse the content of recent auto-saves into that
+storage, and reload one.
+
+Make a button for copying all the HTML to the clipboard, for easy
+pasting into a blog post or WordPress page, for instance.
+
