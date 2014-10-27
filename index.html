@@ -64,7 +64,30 @@ If you write [Sage](http://www.sagemath.org) code, like
     ## sage
     plot( x^2, (x,-3,3) )
 
-then you can run it!  Replace `#sage` with `#sagecell`, and it will immediately become executable.
+then you can run it!  Replace `# sage` with `# sagecell`, and it will immediately become executable.
+
+## More
+
+If you change the `## sage` to `## quiz`, this creates a "Quiz yourself" button, and uses your code to generate a quiz for the user.  Your code should then be in the following format (after replacing the "sage" with "quiz").
+
+    ## sage
+    a = int(random()*10+1)
+    b = int(random()*10+1)
+    # Instructions:  Compute $#{a}+#{b}$ and put your answer below.  Press enter to have your answer graded.  Click "Quiz yourself" again to get a new problem.
+    Sum : 0
+    if ( Sum &lt; a + b ):
+        return INCORRECT + " (too small)"
+    if ( Sum &gt; a + b ):
+        return INCORRECT + " (too large)"
+    return CORRECT
+
+The first two lines allow you to do some computations as setup before the quiz is shown.  (These will be re-run every time the user clicks the "Quiz yourself" button to regenerate the quiz.)  They do not need to be assignment statements, but in this case they are.
+
+The third line, commented with a #, gives the user instructions.  Anything inside #{...} will be replaced with its actual value before the user sees the text.
+
+The fourth line initializes the user's answer to a value that will always be incorrect, so that the quiz doesn't start out coincidentally already solved.  The user will then interact with Sage to change this value.  It must always be an identifier followed by a colon and then a value.  You may have as many such lines as you like, if the question requires multiple responses.
+
+The remainder of the code computes whether the user was correct or incorrect, and returns strings that give informative feedback to the user.  The pre-defined constants CORRECT and INCORRECT are green and red (respectively) text that say exactly that (correct, incorrect).  Add your own helpful text after them, as in the example above.  Be as verbose as you like.
 
 *Enjoy!*
 
