@@ -90,7 +90,8 @@ function handleSage ( element, andMakeSagecell )
                 var line = lines[j];
                 if ( line[0] == '#' ) {
                     if ( count ) signature += ',';
-                    var text = '"' + line.substring( 1 ) + '"';
+                    var text = '"' + line.substring( 1 )
+                        .replace( /"/g, '\\"' ) + '"';
                     var n = /#\{([a-zA-Z_]+)\}/.exec( text );
                     while ( n ) {
                         text = text.substring( 0, n.index )
