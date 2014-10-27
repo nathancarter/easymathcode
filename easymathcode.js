@@ -59,8 +59,11 @@ function getTemplate ( name )
         JSON.parse( JSON.stringify( templates[name] ) ) : { };
 }
 
-function handleSage ( element )
+function handleSage ( element, andMakeSagecell )
 {
+    if ( typeof andMakeSagecell == 'undefined' )
+        andMakeSagecell = true;
+    var result = andMakeSagecell ? undefined : '';
     var all = element.getElementsByTagName( 'pre' );
     var len = all.length;
     for ( var i = 0 ; i < len ; i++ ) {
@@ -103,6 +106,8 @@ function handleSage ( element )
                 }
                 var decl = /^([a-zA-Z_]+)[ \t\r]*:(.*)$/
                            .exec( line );
+                if ( decl && ( decl[2].trim().length == 0 ) )
+                    decl = null;
                 if ( decl ) {
                     if ( count ) signature += ',';
                     signature += decl[1] + '=("Choose ' + decl[1]
@@ -158,13 +163,19 @@ function handleSage ( element )
                 options = { };
             }
             options.inputLocation = '#sage-cell-'+i;
-            sagecell.makeSagecell( options );
+            if ( andMakeSagecell ) {
+                sagecell.makeSagecell( options );
+            } else {
+                result += 'sagecell.makeSagecell('
+                        + JSON.stringify( options ) + ');\n';
+            }
         } else {
             pre.className = ( pre.className ?
                               pre.className + ' ' : '' ) + m[1];
             hljs.highlightBlock( pre );
         }
     }
+    return result;
 }
 
 function refresh ()
@@ -246,8 +257,10 @@ function fileChosen ( event )
 
 function downloadHTML ( event )
 {
-    var data = window.showdownConverter.makeHtml(
+    var tmp = document.createElement( 'div' );
+    tmp.innerHTML = window.showdownConverter.makeHtml(
         D( 'source' ).value );
+    var globalCall = handleSage( tmp, false );
     data = '<html>\n'
          + '  <head>\n'
          + '    <link rel="stylesheet" href="highlight.css">\n'
@@ -272,10 +285,10 @@ function downloadHTML ( event )
          + '  </head>\n'
          + '  <body style="padding: 1em;">\n'
          + '    <div style="width: 800px; margin: 0 auto;">\n'
-         + data + '\n'
+         + tmp.innerHTML + '\n'
          + '    </div>\n'
          + '    <script>\n'
-         + '        handleSage( document.body );\n'
+         + globalCall
          + '    </script>\n'
          + '  </body>\n'
          + '</html>';
